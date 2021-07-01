@@ -52,8 +52,8 @@ def get_input():
     return ch
 
 
-def show_menu(choice_list, title=None, pos=0, is_first=True):
-    if title and is_first:
+def show_menu(choice_list, pos=0, is_first=True):
+    if is_first:
         sys.stdout.flush()
     if not is_first:
         clear_choose(choice_list)
@@ -69,14 +69,14 @@ def flatten(choice_info):
     return choice_list
 
 
-def pick(choice_info, title=None):
+def pick(choice_info):
     choice_list = flatten(choice_info)
 
     pos = 0
     while choice_list[pos]['disabled'] == True:
         pos = (pos + 1) % len(choice_list)
 
-    show_menu(choice_list, title, pos)
+    show_menu(choice_list, pos)
 
     while True:
         fd = sys.stdin.fileno()
@@ -90,7 +90,7 @@ def pick(choice_info, title=None):
         if key == CREL_C:
             break
         elif key == ENTER:
-            return choice_list[pos]
+            return choice_list[pos]['info'], choice_list[pos]['type']
         elif key == UP:
             pos = (pos - 1) % len(choice_list)
             while choice_list[pos]['disabled'] == True:
@@ -100,4 +100,10 @@ def pick(choice_info, title=None):
             while choice_list[pos]['disabled'] == True:
                 pos = (pos + 1) % len(choice_list)
 
-        show_menu(choice_list, title, pos, False)
+        show_menu(choice_list, pos, False)
+
+
+if __name__ == '__main__':
+    from pickerUI import pick
+    target, level = pick({"A":[0,1,2], "B":[0,1,2]})
+    print(target, level)
